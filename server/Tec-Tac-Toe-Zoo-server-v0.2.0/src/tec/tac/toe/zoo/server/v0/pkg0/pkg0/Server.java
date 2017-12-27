@@ -30,9 +30,6 @@ import javax.print.attribute.standard.Severity;
  * @author Omnia
  */
 public class Server extends Application implements ServerInterface{
-    
-    
-    
     ServerSocket ss = null;
     int p =5555;
     Socket s = null;
@@ -54,7 +51,7 @@ public class Server extends Application implements ServerInterface{
             try {
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
-                startSErver();
+                startServer();
                 dataBase = new DataBaseClass("tic-tac-tooe","root","");
                 System.out.println("Server Started ");
                 btn.setVisible(false);
@@ -72,9 +69,7 @@ public class Server extends Application implements ServerInterface{
             public void handle(ActionEvent event) {
                 stopSErver();
                 System.out.println("Server Stopped ");
-            
             }
-                    
         }
                 
         );
@@ -102,8 +97,6 @@ public class Server extends Application implements ServerInterface{
            }.start();
        
     }
-    
-
     
     public String updateUserState() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
@@ -169,34 +162,8 @@ public class Server extends Application implements ServerInterface{
 
     }
 
-    
-//    public String SignIn() {
-//        
-//        new Thread(){
-//        
-//            public void run(){
-//                while(true){
-//                    try {
-//                        String name_pass = in.readLine();
-//                        String[] info = name_pass.split(",");
-//                         name = info[0];
-//                         password = info[1];
-//                        
-//                    } catch (IOException ex) {
-//                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//                    }
-//                
-//                }
-//            
-//            }
-//        
-//        }.start();
-//        DataBaseClass.insertPlayer(name,password);
-//        return name;
-//        
-//    }
 
-    public void startSErver(){
+    public void startServer(){
     
         startThread =new Thread(){  
             
