@@ -24,6 +24,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import javax.print.attribute.standard.Severity;
+import static tec.tac.toe.zoo.server.v0.pkg0.pkg0.DataBaseClass.rs;
 
 /**
  *
@@ -84,7 +85,7 @@ public class Server extends Application implements ServerInterface{
         primaryStage.show();
     }
     
-    public void acceptRequest() {
+   public void acceptRequest() {
        new Thread(){
            public void run(){
            while(true){
@@ -164,9 +165,7 @@ public class Server extends Application implements ServerInterface{
 
 
     public void startServer(){
-    
         startThread =new Thread(){  
-            
             public void stopThread(){
             }
             public void run(){
@@ -271,7 +270,7 @@ class LogedPlayer extends Thread{
             this.clientSocket = clientSocket;
             input = new DataInputStream(clientSocket.getInputStream());
             output = new PrintStream(clientSocket.getOutputStream());
-           
+
             Server.currentLogedPlayers.add(this);
             this.start();
             
@@ -281,51 +280,16 @@ class LogedPlayer extends Thread{
         
     }
     
-     private void getPlayerData(String userName , String userPass) {
-        
-            
-            /*String loginMsg = input.readLine();
-            megHendler(loginMsg);
-            */
-            if(userName != null && userPass != null){
-                
-                if(dataBase != null){
-                       //ResultSet result=DataBaseClass.selectPlayers(userName,userPass);
-                       String userdata = DataBaseClass.selectPlayers(userName,userPass);
-                       if(userdata != null){
-                       output.println("login:"+userdata);} 
-                }else{  
-                    System.out.println("data base null");
-                        //faild to get user data from database
-                }
-                
-            }else{
-                System.out.println("fail to get data from client message");
-                //faild to get User name and PAss
-            }
-      
-        }
-     
     public void run(){
-        
-        
-    
         while(true){
-        
             try {
                 String loginMsg = input.readLine();
                 megHendler(loginMsg);
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
-        
-        
-        
         }
         
-    //getPlayerData();
-    
-    
     }
 
         
@@ -337,45 +301,39 @@ class LogedPlayer extends Thread{
             switch(replay){
             
                 case "login" : {
+                    //login:user=name,pass=pass
                     String msg = loginMsg.split("\\:")[1];
-                    System.out.println("1 "+msg);
-                    
+                    System.out.println("1 "+msg);    
                     String temp = msg.split("\\,")[0];
                     System.out.println("2 " +temp);
                     userName = temp.split("\\=")[1];
                     System.out.println("3 "+userName);
-                    
                     temp = msg.split("\\,")[1];
-                    
                     userPass = temp.split("\\=")[1];
                     System.out.println("3 "+userPass);
                     getPlayerData(userName,userPass);
-                    return "true";
-                   
+                    return "true";  
                 }
                 case "signup":{
-                
+                    //request signip:user=name,pass=pass
                     String msg = loginMsg.split("\\:")[1];
                     System.out.println("1 "+msg);
-                    
                     String temp = msg.split("\\,")[0];
                     System.out.println("2 " +temp);
                     userName = temp.split("\\=")[1];
                     System.out.println("3 "+userName);
-                    
                     temp = msg.split("\\,")[1];
-                    
                     userPass = temp.split("\\=")[1];
                     System.out.println("3 "+userPass);
                     insertPlayer(userName,userPass);
                     return "true";
-                
-                
                 }
-            
-            
+
+                case "online" :{
+                    String players = getAllPlayers();
+                    output.println("online:");
+                }
             }
-            
             return "";
         }
 
@@ -391,7 +349,80 @@ class LogedPlayer extends Thread{
            }
         }
 
-       
+        private void getPlayerData(String userName , String userPass) {
+            /*String loginMsg = input.readLine();
+            megHendler(loginMsg);
+            */
+            if(userName != null && userPass != null){
+                if(dataBase != null){
+                       ResultSet rs = DataBaseClass.selectPlayers(userName,userPass);
+                       String userdata = "";
+                       if(rs != null){
+                           try {
+                               if(rs.next()){
+                                   for(int i = 1 ; i < 4;i++){
+                                       userdata += rs.getString(i)+",";
+                                   }
+                                   userdata +="1";//current user is active
+                               }else{
+                                   userdata ="false";
+                                   System.out.println("no next");
+                               }
+                           } catch (SQLException ex) {
+                               Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                           }
+                           output.println("login:"+userdata);
+                        } 
+                }else{  
+                    System.out.println("data base null");
+                        //faild to get user data from database
+                }
+                
+            }else{
+                System.out.println("fail to get data from client message");
+                //faild to get User name and PAss
+            }
+      
+        }
+        
+        private String  getAllPlayers(){
+            String players = "";
+            if(dataBase != null ){
+               if(dataBase != null){
+                       ResultSet rs = DataBaseClass.selectPlayers(userName,userPass);
+                       String userdata = "";
+                       if(rs != null){
+                           try {
+                               if(rs.next()){
+                                   for(int i = 1 ; i < 4;i++){
+                                       userdata += rs.getString(i)+",";
+                                   }
+                                   //check if player is online
+                                   userdata += 
+                                           checkPlayerOnline(userName) ? "1":"0";
+                               }else{
+                                   userdata ="false";
+                                   System.out.println("no next");
+                               }
+                           } catch (SQLException ex) {
+                               Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                           }
+                           System.out.println("all player data "+userdata);
+                           output.println("login:"+userdata);
+                        } 
+                }else{  
+                    System.out.println("data base null");
+                        //faild to get user data from database
+                }
+            }
+            return players;
+        }
+        
+        private boolean checkPlayerOnline(String name){
+            return currentLogedPlayers.indexOf(this) != -1;
+        }
+        
+        
     }
 
 
