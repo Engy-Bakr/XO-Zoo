@@ -55,7 +55,7 @@ public class Server extends Application implements ServerInterface{
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
                 startSErver();
-                dataBase = new DataBaseClass("tic-tac-tooe","root","");
+                dataBase = new DataBaseClass("tic_tac_toe_zoo","root","");
                 System.out.println("Server Started ");
                 btn.setVisible(false);
                 
