@@ -50,7 +50,7 @@ public class Client extends Application {
     
     //network Data
     public static final int port = 5555;
-    public static final String ip = "192.168.0.161";
+    public static final String ip = "192.168.0.116";
     Socket socket = null;
     DataInputStream inStream = null;
     PrintStream outStream = null ;
