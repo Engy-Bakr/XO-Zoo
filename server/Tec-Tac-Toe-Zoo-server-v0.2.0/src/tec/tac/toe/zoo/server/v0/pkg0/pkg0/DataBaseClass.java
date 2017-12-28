@@ -49,8 +49,9 @@ import java.util.logging.Logger;
          try 
          {
              
-             String existed = DataBaseClass.selectPlayers(name, pass);
-             if(!existed.equals("false")){
+             ResultSet rs = DataBaseClass.selectPlayers(name, pass);
+             rs.beforeFirst();
+             if(rs.next()){
                  inserted = false;
                  return inserted; 
              }
@@ -69,6 +70,26 @@ import java.util.logging.Logger;
          
          return inserted; 
     }
+    
+      static ResultSet selectPlayers(String userNamae , String userPass)//username pass
+     {
+        
+         //get All Players From DataBase  
+          //return query result   
+         try 
+         {
+             String sql="SELECT* FROM player where userName = ? and password = ?";
+             pst=con.prepareStatement(sql);
+             pst.setString(1, userNamae);
+             pst.setString(2, userPass);
+             rs=pst.executeQuery();
+         } catch (SQLException ex) {
+             Logger.getLogger(DataBaseClass.class.getName()).log(Level.SEVERE, null, ex);
+         }
+         
+         return rs;
+    }
+    
     static int deletePlayer(String name,String pass ) 
     // delete player
     //username pass        
@@ -119,42 +140,7 @@ import java.util.logging.Logger;
          }
          return r;
     }
-    static String selectPlayers(String userNamae , String userPass)//username pass
-     {
-        
-         //get All Players From DataBase  
-          //return query result   
-   
-        String userdata="";
-         try 
-         {
-             String sql="SELECT* FROM player where userName = ? and password = ?";
-             
-             pst=con.prepareStatement(sql);
-             pst.setString(1, userNamae);
-             pst.setString(2, userPass);
-             rs=pst.executeQuery();
-             
-            if(rs.next()){
-                for(int i = 1 ; i < 4;i++){
-                    userdata += rs.getString(i)+",";
-                    System.out.println("re "+userdata);
-                }
-                System.out.println("data :" +userdata);
-                return userdata;
-            }else{
-                userdata ="false";
-                return userdata;
-                // System.out.println("no next");
-            }
-             
-         } catch (SQLException ex) {
-             Logger.getLogger(DataBaseClass.class.getName()).log(Level.SEVERE, null, ex);
-         }
-         
-         return userdata;
-    }
-    
+  
     static int insertGame(int gameId,String player1,String player2,String winner,int request){ 
         //adding game  
         //return
