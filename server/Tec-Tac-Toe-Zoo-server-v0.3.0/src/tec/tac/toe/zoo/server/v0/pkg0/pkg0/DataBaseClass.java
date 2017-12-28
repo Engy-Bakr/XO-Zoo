@@ -79,6 +79,7 @@ import java.util.logging.Logger;
          try 
          {
              String sql="SELECT* FROM player where userName = ? and password = ?";
+<<<<<<< HEAD
              String sql2 = "SELECT* FROM player";
              
              if(userNamae == null && userPass == null ){
@@ -90,6 +91,11 @@ import java.util.logging.Logger;
                
              }
              
+=======
+             pst=con.prepareStatement(sql);
+             pst.setString(1, userNamae);
+             pst.setString(2, userPass);
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
              rs=pst.executeQuery();
          } catch (SQLException ex) {
              Logger.getLogger(DataBaseClass.class.getName()).log(Level.SEVERE, null, ex);

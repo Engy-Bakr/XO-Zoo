@@ -54,10 +54,16 @@ public class Server extends Application {
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
                 startServer();
+<<<<<<< HEAD
                 dataBase = new DataBaseClass("tic-ttac-tooe","root","");
                 System.out.println("Server Started ");
                 start.setVisible(false);
                 
+=======
+                dataBase = new DataBaseClass("tic-tac-tooe","root","");
+                System.out.println("Server Started ");
+                start.setVisible(false);
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -78,7 +84,13 @@ public class Server extends Application {
         
         StackPane root = new StackPane();
         root.getChildren().add(start);
+<<<<<<< HEAD
         Scene scene = new Scene(root, 300, 250);
+=======
+        
+        Scene scene = new Scene(root, 300, 250);
+        
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -160,9 +172,13 @@ class LogedPlayer extends Thread{
                     String loginMsg = input.readLine();
                     msgHendler(loginMsg);
                 } catch (IOException ex) {
+<<<<<<< HEAD
                    // Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     stopThread();
                     running = false;
+=======
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                 }
             }
         }
@@ -179,7 +195,10 @@ class LogedPlayer extends Thread{
         }
         
         private String msgHendler(String message) {
+<<<<<<< HEAD
             System.out.println("msss "+message);
+=======
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
             String replay = message.split("\\:")[0];
             switch(replay){
                 case "login" : {
@@ -216,11 +235,14 @@ class LogedPlayer extends Thread{
                     this.logOut(); 
                     break;
                 }
+<<<<<<< HEAD
                 case "play":{
                     String playWith = message.split("\\:")[1];
                     sendRequest(playWith);
                     break;
                 }
+=======
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                 default:
                     System.out.println(message);          
             }
@@ -274,6 +296,7 @@ class LogedPlayer extends Thread{
         
         synchronized private String  getAllPlayers(){
             String players = "";
+<<<<<<< HEAD
                if(dataBase != null){
                        ResultSet rs = DataBaseClass.selectPlayers(null,null);
                        String userdata = "";
@@ -283,23 +306,47 @@ class LogedPlayer extends Thread{
                                    userdata = "";
                                    for(int i = 1 ; i < 4;i++){
                                        if(i != 2)
+=======
+            if(dataBase != null ){
+               if(dataBase != null){
+                       ResultSet rs = DataBaseClass.selectPlayers(userName,userPass);
+                       String userdata = "";
+                       if(rs != null){
+                           try {
+                               if(rs.next()){
+                                   for(int i = 1 ; i < 4;i++){
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                                        userdata += rs.getString(i)+"-";
                                    }
                                    //check if player is online
                                    userdata += 
                                            checkPlayerOnline(userName) ? "1":"0";
                                    players +=userdata+",";
+<<<<<<< HEAD
                                    System.out.println(userdata);
+=======
+                               }else{
+                                   userdata ="false";
+                                   System.out.println("no next");
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                                }
                            } catch (SQLException ex) {
                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                            }
+<<<<<<< HEAD
+=======
+                           System.out.println("all player data "+userdata);
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                         } 
                 }else{  
                     System.out.println("data base null");
                         //faild to get user data from database
                 }
+<<<<<<< HEAD
             
+=======
+            }
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
             return players;
         }
         
@@ -308,8 +355,11 @@ class LogedPlayer extends Thread{
         }
 
         synchronized private void logOut(){
+<<<<<<< HEAD
             //logout this current player 
             //close thread
+=======
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
             if(Server.currentLogedPlayers.remove(this)){
                 System.out.println("removed : "+userName);
                 running = false;
@@ -319,15 +369,21 @@ class LogedPlayer extends Thread{
         }
         
         synchronized private void updatePlayerStatus(){
+<<<<<<< HEAD
             //send message for all player 
             //that user userName is loged out 
             for(LogedPlayer i : Server.currentLogedPlayers){
                     if(i.userName != this.userName){
                         System.err.println("message to : " + i.userName);
+=======
+            for(LogedPlayer i : Server.currentLogedPlayers){
+                    if(i.userName != this.userName){
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
                         i.output.println("update:"+userName);
                     }
                 }
         }
+<<<<<<< HEAD
 
         private void sendRequest(String playWith) {
             for(LogedPlayer i : currentLogedPlayers){
@@ -343,6 +399,8 @@ class LogedPlayer extends Thread{
             
             }
         }
+=======
+>>>>>>> cc018a513287e760d7c47df297568773b10ae8d8
         
     }
 

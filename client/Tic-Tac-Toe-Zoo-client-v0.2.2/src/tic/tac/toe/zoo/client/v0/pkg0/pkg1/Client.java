@@ -57,6 +57,7 @@ public class Client extends Application {
     
     //network Data
     public static final int port = 5555;
+
     public static final String ip = "10.140.200.81";
     Socket socket = null;
     DataInputStream inStream = null;
@@ -524,7 +525,7 @@ public class Client extends Application {
                 Game G=new Game(userName, name);
             }
             if (msg.equals("rejected")){
-                //send msg (prompt that reuest reused)
+                //send msg (prompt show request refused)
             }
             
         } catch (IOException ex) {
