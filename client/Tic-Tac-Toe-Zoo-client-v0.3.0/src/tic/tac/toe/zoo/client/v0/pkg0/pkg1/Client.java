@@ -47,10 +47,9 @@ public class Client extends Application {
     boolean vaildUser  = false;
     boolean userSigned  = false;
     
-    
     //network Data
     public static final int port = 5555;
-    public static final String ip = "192.168.0.116";
+    public static final String ip = "10.140.200.226";
     Socket socket = null;
     DataInputStream inStream = null;
     PrintStream outStream = null ;
@@ -77,8 +76,7 @@ public class Client extends Application {
                         //mode 1 login mode 2 signup
     public void startServerConnection(String mode,String name, String pass){      
         if(!serverAvilability){
-            new Thread(){
-                 
+            new Thread(){      
                  //this thread to try to connect to server 
                  //it will connect to server and close in case of connection succesed or faild
                  //thread should wait a replay
@@ -154,11 +152,7 @@ public class Client extends Application {
                         System.err.println("Faild to close connection thread "+ ex2.getMessage());
                     }
                 }
-
-
             }
-
-
              }.start();
         }
 
@@ -225,7 +219,6 @@ public class Client extends Application {
 
         Scene scene = new Scene(loginScene, 700, 575);
         scene.getStylesheets().add(Client.class.getResource("css/Login.css").toExternalForm());
-
         stage.close();
         stage = new Stage();
         stage.setTitle("Tic-Tac-Toe-Zoo!");
@@ -234,30 +227,26 @@ public class Client extends Application {
     }
    
     public void createGameStage(String u){
-    
         FlowPane root = new FlowPane();
-         
         Button btn = new Button();
         btn.setText("Hello "+u);
+        
         btn.setOnAction(new EventHandler<ActionEvent>() {
-            
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
+                //startServerListener();
+                outStream.println("online:");
             }
         });
-        
-       
+
         Button logOut = new Button();
         logOut.setText("Log out");
         logOut.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
-               logOut(userName,userPass);
+                logOut(userName,userPass);
             }
         });
-        
-        
         
         root.getChildren().add(btn);
         root.getChildren().add(logOut);
@@ -269,10 +258,6 @@ public class Client extends Application {
         stage.setTitle("Tic-Tac-Toe-Zoo!");
         stage.setScene(scene);
         stage.show();
-        
-        //return scene;
-        
-        
     }
     
     public void createSignUpScene(){
@@ -304,7 +289,6 @@ public class Client extends Application {
         loginValid.setId("actiontarget");
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
-
             @Override
             public void handle(ActionEvent e) {
                 String name = userTextField.getText();
@@ -353,9 +337,9 @@ public class Client extends Application {
                 while(true){
                     try {
                         String message = "";
+                        System.out.println("lisin  ....");
                         message = inStream.readLine();
                         String msg = serverMessageHandler(message);
-
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -390,6 +374,7 @@ public class Client extends Application {
             case "logout":
                 
             default:
+                System.out.println(msg);
                 return "Undefined Message";
         }
       
@@ -399,7 +384,6 @@ public class Client extends Application {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                
                 if(errorMsg != null){
                     loginValid.setText(errorMsg);
                     btn.setVisible(true);
@@ -437,12 +421,6 @@ public class Client extends Application {
             }
     }
     
-    private void Signup(String userName ,String userPass){
-    
-        String signUpMsg = "signup:name="+userName+",pass="+userPass;
-        
-    
-    }
        
 }
     
