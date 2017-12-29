@@ -179,7 +179,6 @@ class LogedPlayer extends Thread{
         }
         
         private String msgHendler(String message) {
-            System.out.println("msss "+message);
             String replay = message.split("\\:")[0];
             switch(replay){
                 case "login" : {

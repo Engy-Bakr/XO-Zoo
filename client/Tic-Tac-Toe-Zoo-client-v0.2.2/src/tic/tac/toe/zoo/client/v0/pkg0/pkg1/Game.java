@@ -14,12 +14,16 @@ package tic.tac.toe.zoo.client.v0.pkg0.pkg1;
     String seconedPlayer ;
     String winnerPlayer ;
     int requestId;
+<<<<<<< HEAD
     
     public Game(String first, String seconed)
     {
         firstPlayer=first;
         seconedPlayer=seconed;
     }
+=======
+
+>>>>>>> sara
    
     public Game(String first, String seconed, String winner, int request)
         {

@@ -39,7 +39,6 @@ public class Client extends Application {
     
     //"logout:name="+userName+",pass="+userPass
     //"logout:name="+userName+",pass="+userPass
-    
     //player Data
     String userName;
     String userPass;
@@ -69,7 +68,7 @@ public class Client extends Application {
     @Override
     public void start(Stage primaryStage) throws SocketException {
         stage = primaryStage;
-        createLoginScene();
+         createMainScene();
        // createSignUpScene();
        
     }
@@ -234,8 +233,8 @@ public class Client extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                /*startServerListener();
-                outStream.println("online:");*/
+                //startServerListener();
+                outStream.println("online:");
             }
         });
 

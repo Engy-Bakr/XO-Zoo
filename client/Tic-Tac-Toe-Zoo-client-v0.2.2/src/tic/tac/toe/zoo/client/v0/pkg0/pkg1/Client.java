@@ -57,7 +57,10 @@ public class Client extends Application {
     
     //network Data
     public static final int port = 5555;
+<<<<<<< HEAD
 
+=======
+>>>>>>> sara
     public static final String ip = "10.140.200.81";
     Socket socket = null;
     DataInputStream inStream = null;
@@ -522,10 +525,17 @@ public class Client extends Application {
             String reply = inStream.readLine();
             String msg = serverMessageHandler(reply);
             if (msg.equals("accepted")){
+<<<<<<< HEAD
                 Game G=new Game(userName, name);
             }
             if (msg.equals("rejected")){
                 //send msg (prompt show request refused)
+=======
+       //   >>>>>    //  Game G =new Game(name);
+            }
+            if (msg.equals("rejected")){
+                //send msg (prompt that reuest reused)
+>>>>>>> sara
             }
             
         } catch (IOException ex) {
