@@ -11,12 +11,21 @@ import java.util.List;
  *
  * @author abdelmun3m
  */
-public class Player {
+     class Player {
     String userName ;
     String passWord ;
     List requestList ;
     List gameList ;
+    boolean active;
     
     
+    public Player(String name, String pass,  boolean active , List request, List game)
+        {
+            userName=name;
+            passWord=pass;
+            requestList=request;
+            gameList=game;
+        }
+     }
+
     
-}

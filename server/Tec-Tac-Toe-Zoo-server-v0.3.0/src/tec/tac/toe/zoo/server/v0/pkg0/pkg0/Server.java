@@ -54,17 +54,16 @@ public class Server extends Application {
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
                 startServer();
-                dataBase = new DataBaseClass("tic-ttac-tooe","root","");
+                dataBase = new DataBaseClass("tic-tac-tooe","root","");
                 System.out.println("Server Started ");
                 start.setVisible(false);
-                
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
                 }
             });
                 
-         stop = new Button();
+        stop = new Button();
         stop.setText("stop Server");
         stop.setOnAction(new EventHandler<ActionEvent>(){
             
@@ -163,6 +162,7 @@ class LogedPlayer extends Thread{
                    // Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     stopThread();
                     running = false;
+                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -289,7 +289,6 @@ class LogedPlayer extends Thread{
                                    userdata += 
                                            checkPlayerOnline(userName) ? "1":"0";
                                    players +=userdata+",";
-                                   System.out.println(userdata);
                                }
                            } catch (SQLException ex) {
                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -299,7 +298,6 @@ class LogedPlayer extends Thread{
                     System.out.println("data base null");
                         //faild to get user data from database
                 }
-            
             return players;
         }
         
@@ -323,7 +321,6 @@ class LogedPlayer extends Thread{
             //that user userName is loged out 
             for(LogedPlayer i : Server.currentLogedPlayers){
                     if(i.userName != this.userName){
-                        System.err.println("message to : " + i.userName);
                         i.output.println("update:"+userName);
                     }
                 }
@@ -331,7 +328,6 @@ class LogedPlayer extends Thread{
 
         private void sendRequest(String playWith) {
             for(LogedPlayer i : currentLogedPlayers){
-                
                   if(i.userName.equals(playWith)){
                       try {
                           i.output.println("play:request");

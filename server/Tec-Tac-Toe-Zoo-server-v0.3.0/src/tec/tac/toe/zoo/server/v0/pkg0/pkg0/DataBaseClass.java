@@ -73,7 +73,6 @@ import java.util.logging.Logger;
     
       static ResultSet selectPlayers(String userNamae , String userPass)//username pass
      {
-        
          //get All Players From DataBase  
           //return query result   
          try 
@@ -89,7 +88,6 @@ import java.util.logging.Logger;
                 pst.setString(2, userPass);
                
              }
-             
              rs=pst.executeQuery();
          } catch (SQLException ex) {
              Logger.getLogger(DataBaseClass.class.getName()).log(Level.SEVERE, null, ex);
@@ -321,14 +319,4 @@ import java.util.logging.Logger;
          }
          return rs;
     }
-    
-    /*public static void main(String[] args) {
-        DataBaseClass.DataBaseClass("tic_tac_toe_zoo","root","");
-        DataBaseClass.selectPlayers();
-       // DataBaseClass.insertPlayer("engy","174");
-        //DataBaseClass.addRequest(4, "engy","sara",1);
-       // DataBaseClass.insertGame(17,"engy","sara","engy",7);
-          DataBaseClass.deletePlayer("engy","174" );
-        
-    }*/
 }

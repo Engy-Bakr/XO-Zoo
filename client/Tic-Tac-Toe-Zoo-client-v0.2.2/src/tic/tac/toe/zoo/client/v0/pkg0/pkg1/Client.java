@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -46,11 +48,17 @@ public class Client extends Application {
     Stage stage ;
     boolean vaildUser  = false;
     boolean userSigned  = false;
+    String active;
+    boolean Active;
+    static List<Player> client = new Vector<Player>();
+    static List<String> records = new Vector<String>();
+    static List<Game> games = new Vector<Game>();
     
     
     //network Data
     public static final int port = 5555;
-    public static final String ip = "192.168.0.116";
+
+    public static final String ip = "10.140.200.81";
     Socket socket = null;
     DataInputStream inStream = null;
     PrintStream outStream = null ;
@@ -101,6 +109,7 @@ public class Client extends Application {
                         final String loginMsg = "signup:name="+name+",pass="+pass;
                         outStream.println(loginMsg);
                     }
+                    
                     
                     //reade server stream 
                     System.out.println("start read");
@@ -235,6 +244,8 @@ public class Client extends Application {
    
     public void createGameStage(String u){
     
+        
+        startServerListener();
         FlowPane root = new FlowPane();
          
         Button btn = new Button();
@@ -244,6 +255,8 @@ public class Client extends Application {
             @Override
             public void handle(ActionEvent event) {
                 System.out.println("Hello World!");
+                
+                outStream.println("online:");
             }
         });
         
@@ -370,8 +383,9 @@ public class Client extends Application {
     
     synchronized public String serverMessageHandler(String msg){
         
-        String message = msg.split("\\:")[0];
         
+        String message = msg.split("\\:")[0];
+        System.out.println(msg);
         switch(message){    
             case "login":
                 //login:name=username,pass=pass
@@ -380,18 +394,83 @@ public class Client extends Application {
                 return replay;
                 
                 
-            case "signup":
-                //signup:true|false
+            case "signup":{
+            
+                    //signup:true|false
                 replay = msg.split("\\:")[1];
                 return replay;
              
                 //logout:server
                 //logout:name=uername,pass=pass
-            case "logout":
+            
+            
+            }
+                
+            case "play":{
+                replay = msg.split("\\:")[1];
+                return replay;
+            
+            }
+                
+            case"online":{
+                replay = msg.split("\\:")[1];
+                String[] players=replay.split("\\,");
+                
+                for(int i=0;i<=players.length;i++){
+                String[] player=players[i].split("\\-");
+                Player p= new Player (player[0],player[1],Boolean.parseBoolean(player[2]),null,null);
+                  //  for( i=0;i<=players.length;i++){
+                        client.add(p);
+                   // }
+                 return replay;
+            }}
+            
+            case "update":{
+                replay = msg.split("\\:")[1];
+                System.err.println("up msg "+msg+"   "+replay);
+                for(Player p: client){
+                    if(p.userName.equals(replay))                       
+                        {
+                        p.active=!p.active;
+                        System.out.println("Player " + p.userName + "logoed out " + p.active);
+                        break;
+                        }  
+                 }
+                //update UI
+                return replay;
+            }
+                
+               
+                    
+            case "record":{
+                    replay = msg.split("\\:")[1];
+                for(int i=0;i<=records.size();i++){
+                    records.add(replay.split("\\,")[i]);
+                }
+                return replay;
+            
+            }
+                
+            case"game":{
+                replay = msg.split("\\:")[1];
+                String[] gm=replay.split("\\,");
+                
+                for(int i=0;i<=gm.length;i++){
+                String[] game=gm[i].split("\\-");
+                Game g= new Game (game[0],game[1],game[2],Integer.parseInt(game[3]));
+                games.add(g);
+                }
+                return replay;
+                
+            }
+            case "logout":{
+                
+            }
+                
                 
             default:
                 return "Undefined Message";
-        }
+                }
       
     }
     
@@ -435,6 +514,71 @@ public class Client extends Application {
                     createLoginScene();
                 }
             }
+    }
+    synchronized public void requestPlay (String name){
+        try {
+            final String loginMsg = "play:request"+name;
+            outStream.println(loginMsg);
+            String reply = inStream.readLine();
+            String msg = serverMessageHandler(reply);
+            if (msg.equals("accepted")){
+                Game G=new Game(userName, name);
+            }
+            if (msg.equals("rejected")){
+                //send msg (prompt show request refused)
+            }
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
+    synchronized public void getPlayers (){
+        try {
+            final String loginMsg = "online:players";
+            outStream.println(loginMsg);
+            String reply = inStream.readLine();
+            String msg = serverMessageHandler(reply);
+            for(Player p: client){
+               //print result in screen
+                
+            }   
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
+ 
+    
+    synchronized public void getRecords (){
+        try {
+            final String loginMsg = "records:";
+            outStream.println(loginMsg);
+            String reply = inStream.readLine();
+            String msg = serverMessageHandler(reply);
+            for(int i=0;i<=records.size();i++){
+                records.get(i);//print result in screen
+            }    
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
+    synchronized public void getgames (){
+        try {
+            final String loginMsg = "games:";
+            outStream.println(loginMsg);
+            String reply = inStream.readLine();
+            String msg = serverMessageHandler(reply);
+            for(int i=0;i<=games.size();i++){
+                games.get(i);//print result in screen
+            }    
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
     }
     
     private void Signup(String userName ,String userPass){

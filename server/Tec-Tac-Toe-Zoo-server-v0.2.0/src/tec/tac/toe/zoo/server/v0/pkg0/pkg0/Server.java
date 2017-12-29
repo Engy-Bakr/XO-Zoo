@@ -52,8 +52,10 @@ public class Server extends Application implements ServerInterface{
             try {
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
+
                 startServer();
-                dataBase = new DataBaseClass("tic-tac-tooe","root","");
+                dataBase = new DataBaseClass("tic_tac_toe_zoo","root","");
+
                 System.out.println("Server Started ");
                 btn.setVisible(false);
                 
@@ -330,6 +332,7 @@ class LogedPlayer extends Thread{
                 }
 
                 case "online" :{
+                    //
                     String players = getAllPlayers();
                     output.println("online:");
                 }
