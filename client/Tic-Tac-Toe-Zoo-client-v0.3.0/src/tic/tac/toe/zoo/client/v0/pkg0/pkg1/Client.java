@@ -49,7 +49,7 @@ public class Client extends Application {
     
     //network Data
     public static final int port = 5555;
-    public static final String ip = "10.140.200.226";
+    public static final String ip = "10.140.200.172";
     Socket socket = null;
     DataInputStream inStream = null;
     PrintStream outStream = null ;
@@ -234,8 +234,8 @@ public class Client extends Application {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
-                //startServerListener();
-                outStream.println("online:");
+                /*startServerListener();
+                outStream.println("online:");*/
             }
         });
 

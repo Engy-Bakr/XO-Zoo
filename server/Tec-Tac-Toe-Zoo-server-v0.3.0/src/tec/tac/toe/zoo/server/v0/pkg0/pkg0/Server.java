@@ -54,9 +54,10 @@ public class Server extends Application {
                 ss = new ServerSocket(p);
                 // start background serves which will call accept 
                 startServer();
-                dataBase = new DataBaseClass("tic-tac-tooe","root","");
+                dataBase = new DataBaseClass("tic-ttac-tooe","root","");
                 System.out.println("Server Started ");
                 start.setVisible(false);
+                
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -77,9 +78,7 @@ public class Server extends Application {
         
         StackPane root = new StackPane();
         root.getChildren().add(start);
-        
         Scene scene = new Scene(root, 300, 250);
-        
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
         primaryStage.show();
@@ -161,7 +160,9 @@ class LogedPlayer extends Thread{
                     String loginMsg = input.readLine();
                     msgHendler(loginMsg);
                 } catch (IOException ex) {
-                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                   // Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    stopThread();
+                    running = false;
                 }
             }
         }
@@ -178,6 +179,7 @@ class LogedPlayer extends Thread{
         }
         
         private String msgHendler(String message) {
+            System.out.println("msss "+message);
             String replay = message.split("\\:")[0];
             switch(replay){
                 case "login" : {
@@ -212,6 +214,11 @@ class LogedPlayer extends Thread{
                     String name = msg.split("\\,")[0];
                     String pass = msg.split("\\,")[1];
                     this.logOut(); 
+                    break;
+                }
+                case "play":{
+                    String playWith = message.split("\\:")[1];
+                    sendRequest(playWith);
                     break;
                 }
                 default:
@@ -267,34 +274,32 @@ class LogedPlayer extends Thread{
         
         synchronized private String  getAllPlayers(){
             String players = "";
-            if(dataBase != null ){
                if(dataBase != null){
-                       ResultSet rs = DataBaseClass.selectPlayers(userName,userPass);
+                       ResultSet rs = DataBaseClass.selectPlayers(null,null);
                        String userdata = "";
                        if(rs != null){
                            try {
-                               if(rs.next()){
+                               while (rs.next()) { 
+                                   userdata = "";
                                    for(int i = 1 ; i < 4;i++){
+                                       if(i != 2)
                                        userdata += rs.getString(i)+"-";
                                    }
                                    //check if player is online
                                    userdata += 
                                            checkPlayerOnline(userName) ? "1":"0";
                                    players +=userdata+",";
-                               }else{
-                                   userdata ="false";
-                                   System.out.println("no next");
+                                   System.out.println(userdata);
                                }
                            } catch (SQLException ex) {
                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                            }
-                           System.out.println("all player data "+userdata);
                         } 
                 }else{  
                     System.out.println("data base null");
                         //faild to get user data from database
                 }
-            }
+            
             return players;
         }
         
@@ -303,6 +308,8 @@ class LogedPlayer extends Thread{
         }
 
         synchronized private void logOut(){
+            //logout this current player 
+            //close thread
             if(Server.currentLogedPlayers.remove(this)){
                 System.out.println("removed : "+userName);
                 running = false;
@@ -312,11 +319,29 @@ class LogedPlayer extends Thread{
         }
         
         synchronized private void updatePlayerStatus(){
+            //send message for all player 
+            //that user userName is loged out 
             for(LogedPlayer i : Server.currentLogedPlayers){
                     if(i.userName != this.userName){
+                        System.err.println("message to : " + i.userName);
                         i.output.println("update:"+userName);
                     }
                 }
+        }
+
+        private void sendRequest(String playWith) {
+            for(LogedPlayer i : currentLogedPlayers){
+                
+                  if(i.userName.equals(playWith)){
+                      try {
+                          i.output.println("play:request");
+                          String requestResonce = i.input.readLine();
+                      } catch (IOException ex) {
+                          Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                      }
+                  }
+            
+            }
         }
         
     }
