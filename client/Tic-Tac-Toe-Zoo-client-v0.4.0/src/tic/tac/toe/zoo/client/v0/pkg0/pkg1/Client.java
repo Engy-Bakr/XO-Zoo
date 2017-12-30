@@ -10,6 +10,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.List;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
@@ -57,8 +59,9 @@ public class Client extends Application {
     
     Label loginValid = null;
     Button btn = null;
-    
-    static List<Player> client = new Vector<Player>();
+    String active;
+    boolean Active;
+    static  List<Player> client = new Vector<Player>();
     static List<String> records = new Vector<String>();
     static List<Game> games = new Vector<Game>();
     
@@ -74,11 +77,50 @@ public class Client extends Application {
     @Override
     public void start(Stage primaryStage) throws SocketException {
         stage = primaryStage;
-        // createMainScene();
+        createMainScene();
        
        
     }
-                        //mode 1 login mode 2 signup
+    
+    public void createMainScene(){
+    stage.setTitle("TicTacToeZoe");
+        Pane root = new Pane();
+        Label login = new Label("Login");
+        login.setId("login");
+         login.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                createLoginScene();
+                 }
+ 
+        });
+          root.getChildren().add(login);
+
+        Label signup = new Label("Sign Up");
+        signup.setId("sign");
+        signup.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+               createSignUpScene();
+                 }
+ 
+        });
+    
+    root.getChildren().add(signup);
+        
+        login.setLayoutX(50);
+        login.setLayoutY(448);
+        
+        signup.setLayoutX(570);
+        signup.setLayoutY(448);
+      
+       Scene scene = new Scene(root, 700, 570);
+        stage.setResizable(false);
+        stage.setScene(scene);
+        scene.getStylesheets().add(Client.class.getResource("css/style.css").toExternalForm());
+        stage.show();
+      
+}
     public void startServerConnection(String mode,String name, String pass){      
         if(!serverAvilability){
             new Thread(){      
@@ -311,7 +353,7 @@ public class Client extends Application {
         });
 
         Scene scene = new Scene(root, 800, 575);
-
+        scene.getStylesheets().add(SignUp.class.getResource("css/signup.css").toExternalForm());
         userName.setLayoutX(320);
         userName.setLayoutY(140);
         userTextField.setLayoutX(340);
@@ -325,10 +367,11 @@ public class Client extends Application {
         loginValid.setLayoutX(330);
         loginValid.setLayoutY(430);
         
-        
+        stage.close();
+        stage = new Stage();
+        stage.setTitle("Tic-Tac-Toe-Zoo!");
         stage.setResizable(false);
         stage.setScene(scene);
-        scene.getStylesheets().add(SignUp.class.getResource("css/signup.css").toExternalForm());
         stage.show();
                 
         //create scene 
@@ -376,8 +419,66 @@ public class Client extends Application {
              
                 //logout:server
                 //logout:name=uername,pass=pass
-            case "logout":
+            case "play":{
+                replay = msg.split("\\:")[1];
+                return replay;
+            
+            }
                 
+                case"online":{
+                replay = msg.split("\\:")[1];
+                String[] players=replay.split("\\,");
+                
+                for(int i=0;i<=players.length;i++){
+                String[] player=players[i].split("\\-");
+                Player p= new Player (player[0],player[1],Boolean.parseBoolean(player[2]),null,null);
+                  //  for( i=0;i<=players.length;i++){
+                        client.add(p);
+                   // }
+                 return replay;
+            }}
+            
+            case "update":{
+                replay = msg.split("\\:")[1];
+                System.err.println("up msg "+msg+"   "+replay);
+                for(Player p: client){
+                    if(p.userName.equals(replay))                       
+                        {
+                        p.active=!p.active;
+                        System.out.println("Player " + p.userName + "logoed out " + p.active);
+                        break;
+                        }  
+                 }
+                //update UI
+                return replay;
+            }
+                
+               
+                    
+            case "record":{
+                    replay = msg.split("\\:")[1];
+                for(int i=0;i<=records.size();i++){
+                    records.add(replay.split("\\,")[i]);
+                }
+                return replay;
+            
+            }
+                
+            case"game":{
+                replay = msg.split("\\:")[1];
+                String[] gm=replay.split("\\,");
+                
+                for(int i=0;i<=gm.length;i++){
+                String[] game=gm[i].split("\\-");
+                Game g= new Game (game[0],game[1],game[2],Integer.parseInt(game[3]));
+                games.add(g);
+                }
+                return replay;
+                
+            }
+            case "logout":{
+                
+            }
             default:
                 System.out.println(msg);
                 return "Undefined Message";
