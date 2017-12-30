@@ -41,15 +41,23 @@ public class Client extends Application {
     
     //"logout:name="+userName+",pass="+userPass
     //"logout:name="+userName+",pass="+userPass
+    
     //player Data
     String userName;
     String userPass;
     Stage stage ;
     boolean vaildUser  = false;
     boolean userSigned  = false;
+    String active;
+    boolean Active;
+    static List<Player> client = new Vector<Player>();
+    static List<String> records = new Vector<String>();
+    static List<Game> games = new Vector<Game>();
+    
+    
     //network Data
     public static final int port = 5555;
-    public static final String ip = "10.140.200.172";
+    public static final String ip = "10.140.200.81";
     Socket socket = null;
     DataInputStream inStream = null;
     PrintStream outStream = null ;
@@ -58,63 +66,27 @@ public class Client extends Application {
     
     Label loginValid = null;
     Button btn = null;
-    String active;
-    boolean Active;
-    static  List<Player> client = new Vector<Player>();
-    static List<String> records = new Vector<String>();
-    static List<Game> games = new Vector<Game>();
+     /**
+     * @param args the command line arguments
+     */
     public static void main(String[] args) {
         launch(args);
     }
+ 
+    
     @Override
     public void start(Stage primaryStage) throws SocketException {
         stage = primaryStage;
         createMainScene();
+       // createSignUpScene();
        
-       
-    }   
-    public void createMainScene(){
-    stage.setTitle("TicTacToeZoe");
-        Pane root = new Pane();
-        Label login = new Label("Login");
-        login.setId("login");
-         login.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-                createLoginScene();
-                 }
- 
-        });
-          root.getChildren().add(login);
-
-        Label signup = new Label("Sign Up");
-        signup.setId("sign");
-        signup.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
-            @Override
-            public void handle(javafx.scene.input.MouseEvent event) {
-               createSignUpScene();
-                 }
- 
-        });
+    }
+                        //mode 1 login mode 2 signup
     
-    root.getChildren().add(signup);
-        
-        login.setLayoutX(50);
-        login.setLayoutY(448);
-        
-        signup.setLayoutX(570);
-        signup.setLayoutY(448);
-      
-       Scene scene = new Scene(root, 700, 570);
-        stage.setResizable(false);
-        stage.setScene(scene);
-        scene.getStylesheets().add(Client.class.getResource("css/style.css").toExternalForm());
-        stage.show();
-      
-}
     public void startServerConnection(String mode,String name, String pass){      
         if(!serverAvilability){
-            new Thread(){      
+            new Thread(){
+                 
                  //this thread to try to connect to server 
                  //it will connect to server and close in case of connection succesed or faild
                  //thread should wait a replay
@@ -137,6 +109,7 @@ public class Client extends Application {
                         final String loginMsg = "signup:name="+name+",pass="+pass;
                         outStream.println(loginMsg);
                     }
+                    
                     
                     //reade server stream 
                     System.out.println("start read");
@@ -190,12 +163,57 @@ public class Client extends Application {
                         System.err.println("Faild to close connection thread "+ ex2.getMessage());
                     }
                 }
+
+
             }
+
+
              }.start();
         }
 
 
     }
+    
+    public void createMainScene(){
+    stage.setTitle("TicTacToeZoe");
+        Pane root = new Pane();
+        Label login = new Label("Login");
+        login.setId("login");
+         login.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+                createLoginScene();
+                 }
+ 
+        });
+          root.getChildren().add(login);
+
+        Label signup = new Label("Sign Up");
+        signup.setId("sign");
+        signup.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+               createSignUpScene();
+                 }
+ 
+        });
+    
+    root.getChildren().add(signup);
+        
+        login.setLayoutX(50);
+        login.setLayoutY(448);
+        
+        signup.setLayoutX(570);
+        signup.setLayoutY(448);
+      
+       Scene scene = new Scene(root, 700, 570);
+        stage.setResizable(false);
+        stage.setScene(scene);
+        scene.getStylesheets().add(Client.class.getResource("css/style.css").toExternalForm());
+        stage.show();
+      
+    }
+    
     public void createLoginScene(){
         
         GridPane loginScene = new GridPane();
@@ -245,6 +263,7 @@ public class Client extends Application {
                     loginValid.setText("Connecting...");
                     startServerConnection("login", name,
                             pass);
+                    createprofileScene();
                 } else {
                     loginValid.setText("Please Enter user Name And Pass");
                     btn.setVisible(true);
@@ -256,33 +275,44 @@ public class Client extends Application {
 
         Scene scene = new Scene(loginScene, 700, 575);
         scene.getStylesheets().add(Client.class.getResource("css/Login.css").toExternalForm());
+
         stage.close();
+        stage.setResizable(false);
         stage = new Stage();
         stage.setTitle("Tic-Tac-Toe-Zoo!");
         stage.setScene(scene);
         stage.show();
     }
+   
     public void createGameStage(String u){
+    
+        
+        startServerListener();
         FlowPane root = new FlowPane();
+         
         Button btn = new Button();
         btn.setText("Hello "+u);
-        
         btn.setOnAction(new EventHandler<ActionEvent>() {
+            
             @Override
             public void handle(ActionEvent event) {
-                //startServerListener();
+                System.out.println("Hello World!");
+                
                 outStream.println("online:");
             }
         });
-
+        
+       
         Button logOut = new Button();
         logOut.setText("Log out");
         logOut.setOnAction(new EventHandler<ActionEvent>(){
             @Override
             public void handle(ActionEvent event) {
-                logOut(userName,userPass);
+               logOut(userName,userPass);
             }
         });
+        
+        
         
         root.getChildren().add(btn);
         root.getChildren().add(logOut);
@@ -294,11 +324,17 @@ public class Client extends Application {
         stage.setTitle("Tic-Tac-Toe-Zoo!");
         stage.setScene(scene);
         stage.show();
+        
+        //return scene;
+        
+        
     }
+    
     public void createSignUpScene(){
         
         Pane root = new Pane();
         Label userName = new Label("User Name:");
+        userName.setId("username");
         root.getChildren().add(userName);
 
         TextField userTextField = new TextField();
@@ -306,6 +342,7 @@ public class Client extends Application {
         root.getChildren().add(userTextField);
 
         Label pw = new Label("Password:");
+        pw.setId("pass");
         root.getChildren().add(pw);
 
         PasswordField pwBox = new PasswordField();
@@ -314,16 +351,25 @@ public class Client extends Application {
 
         btn = new Button("Sign Up");
         HBox hbBtn = new HBox(10);
+         hbBtn.setOnMouseClicked(new EventHandler<javafx.scene.input.MouseEvent>(){
+            @Override
+            public void handle(javafx.scene.input.MouseEvent event) {
+               createprofileScene();
+                 }
+ 
+        });
+        
         hbBtn.setAlignment(Pos.BOTTOM_RIGHT);
         hbBtn.getChildren().add(btn);
         root.getChildren().add(hbBtn);
 
         loginValid = new Label();
-        loginValid.setId("signLable");
+        //loginValid.setId("signLable");
         root.getChildren().add(loginValid);
-        loginValid.setId("actiontarget");
+        loginValid.setId("loginValid");
 
         btn.setOnAction(new EventHandler<ActionEvent>() {
+
             @Override
             public void handle(ActionEvent e) {
                 String name = userTextField.getText();
@@ -352,56 +398,32 @@ public class Client extends Application {
         pwBox.setLayoutY(260);
         hbBtn.setLayoutX(330);
         hbBtn.setLayoutY(330);
-        loginValid.setLayoutX(330);
-        loginValid.setLayoutY(430);
+        loginValid.setLayoutX(220);
+        loginValid.setLayoutY(400);
+        
         
         stage.close();
         stage = new Stage();
         stage.setTitle("Tic-Tac-Toe-Zoo!");
         stage.setResizable(false);
         stage.setScene(scene);
+        
         stage.show();
-                
+              
         //create scene 
         //call startServerConnection on button btn click
         // handel errors in loginvalid
     }
-    public void createprofileScene(){
     
-        Pane root = new Pane();
-
-        Label user = new Label("USER NAME");
-        user.setId("login");
-        root.getChildren().add(user);
-        Button btn = new Button("Play Now ");
-        btn.setId("btn");
-      
-        root.getChildren().add(btn);
-
-        user.setLayoutX(350);
-        user.setLayoutY(70);
-
-        btn.setLayoutX(90);
-        btn.setLayoutY(458);
-        
-        Scene scene = new Scene(root, 700, 570);
-        stage.setResizable(false);
-        stage.setScene(scene);
-        scene.getStylesheets().add(Client.class.getResource("css/pro.css").toExternalForm());
-        stage.show();
-
-    
-    
-    }
     public void startServerListener(){
        serverListener  = new Thread(){
             public void run(){
                 while(true){
                     try {
                         String message = "";
-                        System.out.println("lisin  ....");
                         message = inStream.readLine();
                         String msg = serverMessageHandler(message);
+
                     } catch (IOException ex) {
                         Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -413,10 +435,12 @@ public class Client extends Application {
        serverListener.start();
     
     }
+    
     synchronized public String serverMessageHandler(String msg){
         
-        String message = msg.split("\\:")[0];
         
+        String message = msg.split("\\:")[0];
+        System.out.println(msg);
         switch(message){    
             case "login":
                 //login:name=username,pass=pass
@@ -425,20 +449,25 @@ public class Client extends Application {
                 return replay;
                 
                 
-            case "signup":
-                //signup:true|false
+            case "signup":{
+            
+                    //signup:true|false
                 replay = msg.split("\\:")[1];
                 return replay;
              
                 //logout:server
                 //logout:name=uername,pass=pass
+            
+            
+            }
+                
             case "play":{
                 replay = msg.split("\\:")[1];
                 return replay;
             
             }
                 
-                case"online":{
+            case"online":{
                 replay = msg.split("\\:")[1];
                 String[] players=replay.split("\\,");
                 
@@ -492,16 +521,19 @@ public class Client extends Application {
             case "logout":{
                 
             }
+                
+                
             default:
-                System.out.println(msg);
                 return "Undefined Message";
-        }
+                }
       
     }
+    
     private void runtimeUIUpdates( String errorMsg) { 
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                
                 if(errorMsg != null){
                     loginValid.setText(errorMsg);
                     btn.setVisible(true);
@@ -518,6 +550,7 @@ public class Client extends Application {
         });
        
     }
+
     private void logOut(String userName, String userPass) {
         if(serverAvilability){
                 final String loOutMsg = "logout:name="+userName+",pass="+userPass;
@@ -570,6 +603,8 @@ public class Client extends Application {
         }
             
     }
+ 
+    
     synchronized public void getRecords (){
         try {
             final String loginMsg = "records:";
@@ -599,6 +634,42 @@ public class Client extends Application {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
             
+    }
+    
+    public void createprofileScene(){
+    
+        Pane root = new Pane();
+
+        Label user = new Label("USER NAME");
+        user.setId("login");
+        root.getChildren().add(user);
+        Button btn = new Button("Play Now ");
+        btn.setId("btn");
+      
+        root.getChildren().add(btn);
+
+        user.setLayoutX(350);
+        user.setLayoutY(70);
+
+        btn.setLayoutX(90);
+        btn.setLayoutY(458);
+        
+        Scene scene = new Scene(root, 700, 570);
+        stage.setResizable(false);
+        stage.setScene(scene);
+        scene.getStylesheets().add(Client.class.getResource("css/pro.css").toExternalForm());
+        stage.show();
+
+    
+    
+    }
+   
+    
+    private void Signup(String userName ,String userPass){
+    
+        String signUpMsg = "signup:name="+userName+",pass="+userPass;
+        
+    
     }
        
 }
